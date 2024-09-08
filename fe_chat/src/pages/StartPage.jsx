@@ -19,18 +19,33 @@ const ButtonContainer = styled.div`
   width: 300px;
 `;
 
+const Button = styled.button`
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  background-color: #4299e1;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+
+  &:hover {
+    background-color: #3182ce;
+  }
+`;
+
 const StartPage = () => {
   const navigate = useNavigate();
 
   return (
     <StartContainer>
       <ButtonContainer>
-        {/* <Button fullWidth onClick={() => navigate("/login")}> */}
-        로그인
-        {/* </Button> */}
-        {/* <Button fullWidth onClick={() => navigate("/signup")}> */}
-        회원가입
-        {/* </Button> */}
+        <Button fullWidth onClick={() => navigate("/login")}>
+          로그인
+        </Button>
+        <Button fullWidth onClick={() => navigate("/signup")}>
+          회원가입
+        </Button>
       </ButtonContainer>
     </StartContainer>
   );

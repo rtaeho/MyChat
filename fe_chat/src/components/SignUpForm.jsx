@@ -34,7 +34,7 @@ const Select = styled.select`
 `;
 
 const Message = styled.p`
-  margin: 5px 0 10px;
+  margin: -5px 0 10px;
   color: ${(props) => (props.isError ? "#e53e3e" : "#38a169")};
 `;
 
@@ -121,6 +121,11 @@ const SignUpForm = () => {
   };
 
   const handleVerificationCheck = () => {
+    if (!verificationCode) {
+      setVerificationMessage("인증 코드를 입력해주세요!");
+      return;
+    }
+
     const isVerified = Math.random() < 0.5;
     setVerificationMessage(
       isVerified ? "인증이 완료되었습니다." : "인증 코드가 틀립니다!"
@@ -142,7 +147,8 @@ const SignUpForm = () => {
       setErrorMessage("이메일을 입력해주세요.");
     } else if (
       !verificationMessage ||
-      verificationMessage === "인증 코드가 틀립니다!"
+      verificationMessage === "인증 코드가 틀립니다!" ||
+      verificationMessage === "인증 코드를 입력해주세요!"
     ) {
       setErrorMessage("이메일 인증을 해주세요.");
     } else if (!password) {
@@ -221,7 +227,12 @@ const SignUpForm = () => {
           </InputGroup>
         )}
         {verificationMessage && (
-          <Message isError={verificationMessage.includes("틀립니다")}>
+          <Message
+            isError={
+              verificationMessage.includes("틀립니다") ||
+              verificationMessage === "인증 코드를 입력해주세요!"
+            }
+          >
             {verificationMessage}
           </Message>
         )}
