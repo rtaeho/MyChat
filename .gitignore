@@ -389,7 +389,7 @@ gradle-app.setting
 *.hprof
 
 
-/application.properties
+/be_chat/src/main/resources/application.properties
 /.env
 
 # End of https://www.toptal.com/developers/gitignore/api/macos,intellij,visualstudiocode,gradle,java,react,node,yarn
