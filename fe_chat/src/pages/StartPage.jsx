@@ -40,10 +40,10 @@ const StartPage = () => {
   return (
     <StartContainer>
       <ButtonContainer>
-        <Button fullWidth onClick={() => navigate("/login")}>
+        <Button $fullWidth onClick={() => navigate("/login")}>
           로그인
         </Button>
-        <Button fullWidth onClick={() => navigate("/signup")}>
+        <Button $fullWidth onClick={() => navigate("/signup")}>
           회원가입
         </Button>
       </ButtonContainer>

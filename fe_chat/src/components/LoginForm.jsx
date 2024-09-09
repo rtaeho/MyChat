@@ -1,6 +1,8 @@
-// src/components/LoginForm.jsx
 import React, { useState } from "react";
 import styled from "styled-components";
+import { login } from "../api/auth";
+import { useUser } from "../context/UserContext"; // UserContext에서 함수 가져오기
+import { useNavigate } from "react-router-dom";
 
 const Form = styled.form`
   display: flex;
@@ -32,30 +34,82 @@ const Button = styled.button`
   }
 `;
 
-const LoginForm = ({ onLogin }) => {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+const ErrorMessage = styled.p`
+  color: red;
+  margin-top: 1rem;
+`;
 
-  const handleSubmit = (e) => {
+const LoginForm = () => {
+  const [userId, setUserId] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState(null);
+  const { loginUser } = useUser(); // UserContext에서 loginUser 함수 호출
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    onLogin(username);
+    setError(null);
+
+    // 에러 메시지 처리
+    if (!userId && !password) {
+      setError("아이디와 비밀번호를 입력해주세요.");
+      return;
+    } else if (!userId) {
+      setError("아이디를 입력해주세요.");
+      return;
+    } else if (!password) {
+      setError("비밀번호를 입력해주세요.");
+      return;
+    }
+
+    // 로그인 API 호출
+    try {
+      const userData = { userId, password }; // 로그인에 필요한 데이터
+      const response = await login(userData);
+      console.log(response);
+      // 로그인 성공 시 상태 업데이트
+      if (response) {
+        const { userId, nickName } = response;
+        loginUser(userId, nickName); // 유저 정보 저장
+        navigate("/chat");
+      } else {
+        setError("아이디와 비밀번호가 일치하지 않습니다!");
+      }
+    } catch (error) {
+      // 로그인 실패 시 에러 메시지 출력
+      setError("로그인에 실패했습니다.");
+    }
+  };
+
+  // 입력 시 에러 메시지 초기화
+  const handleUserIdChange = (e) => {
+    setUserId(e.target.value);
+    if (e.target.value) setError(null);
+  };
+
+  const handlePasswordChange = (e) => {
+    setPassword(e.target.value);
+    if (e.target.value) setError(null);
   };
 
   return (
     <Form onSubmit={handleSubmit}>
       <Input
         type="text"
-        placeholder="사용자 이름"
-        value={username}
-        onChange={(e) => setUsername(e.target.value)}
+        placeholder="아이디"
+        value={userId}
+        onChange={handleUserIdChange}
+        autoComplete="username"
       />
       <Input
         type="password"
         placeholder="비밀번호"
         value={password}
-        onChange={(e) => setPassword(e.target.value)}
+        onChange={handlePasswordChange}
+        autoComplete="current-password"
       />
       <Button type="submit">로그인</Button>
+      {error && <ErrorMessage>{error}</ErrorMessage>}
     </Form>
   );
 };

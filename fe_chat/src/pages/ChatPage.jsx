@@ -1,7 +1,6 @@
 // src/pages/ChatPage.js
 import React, { useState } from "react";
 import styled from "styled-components";
-import Header from "../components/Header";
 import ChatRoom from "../components/ChatRoom";
 import MessageInput from "../components/MessageInput";
 
@@ -20,7 +19,6 @@ const ChatPage = () => {
 
   return (
     <ChatContainer>
-      <Header username="사용자" />
       <ChatRoom messages={messages} />
       <MessageInput onSendMessage={handleSendMessage} />
     </ChatContainer>
