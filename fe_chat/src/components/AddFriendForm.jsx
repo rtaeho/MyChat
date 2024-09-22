@@ -1,11 +1,9 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import { addFriend } from "../api/friends"; // 친구 추가 API 호출
 
 const Form = styled.form`
   display: flex;
   flex-direction: column;
-  margin-bottom: 1rem;
 `;
 
 const Input = styled.input`

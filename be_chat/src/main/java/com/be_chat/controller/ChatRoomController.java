@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/chatrooms")
@@ -23,7 +24,9 @@ public class ChatRoomController {
 
     // 새로운 1:1 채팅방 생성
     @PostMapping("/create")
-    public ResponseEntity<ChatRoom> createChatRoom(@RequestParam String user1, @RequestParam String user2) {
+    public ResponseEntity<ChatRoom> createChatRoom(@RequestBody Map<String, String> body) {
+        String user1 = body.get("user1");
+        String user2 = body.get("user2");
         ChatRoom newChatRoom = chatRoomService.createChatRoom(user1, user2);
         return ResponseEntity.ok(newChatRoom);
     }

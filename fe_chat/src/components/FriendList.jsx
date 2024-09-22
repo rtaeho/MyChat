@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import styled from "styled-components";
+import { useNavigate } from "react-router-dom"; // useNavigate 사용
+import { createChatRoom } from "../api/chat"; // 채팅방 생성 API 호출
 
 const FriendListContainer = styled.div`
   padding: 1rem;
@@ -46,18 +48,15 @@ const Button = styled.button`
   }
 `;
 
-const FriendList = ({ friends, onChat, onDelete }) => {
+const FriendList = ({ friends, onDelete }) => {
   const [showModal, setShowModal] = useState(false);
   const [selectedFriend, setSelectedFriend] = useState(null);
+  const navigate = useNavigate(); // 페이지 이동을 위한 useNavigate
 
   const handleFriendClick = (friend) => {
     setSelectedFriend(friend.id);
     setShowModal(true);
   };
-
-  useState(() => {
-    console.log("리스트에서 찍음", friends);
-  }, []);
 
   const handleDelete = async () => {
     try {
@@ -68,8 +67,19 @@ const FriendList = ({ friends, onChat, onDelete }) => {
     }
   };
 
+  const handleChat = async (friendId) => {
+    try {
+      // 채팅방 생성 후 상대방 ID로 라우팅
+      const chatRoom = await createChatRoom("현재 로그인된 유저 ID", friendId);
+      navigate(`/chat/${friendId}`); // 상대방의 ID로 페이지 이동
+    } catch (error) {
+      console.error("채팅방 생성 실패:", error);
+    }
+  };
+
   return (
     <FriendListContainer>
+      <h2>친구 목록</h2>
       {friends.map((friend) => (
         <FriendItem key={friend.id}>
           <ProfileImage />
@@ -84,7 +94,7 @@ const FriendList = ({ friends, onChat, onDelete }) => {
         <div>
           {/* 모달 창 구현 */}
           <p>{selectedFriend}님과의 채팅</p>
-          <Button onClick={() => onChat(selectedFriend)}>채팅</Button>
+          <Button onClick={() => handleChat(selectedFriend)}>채팅</Button>
           <Button onClick={handleDelete}>삭제</Button>
         </div>
       )}

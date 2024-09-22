@@ -1,58 +1,65 @@
-import React, { useEffect, useState } from "react";
-import { getChatRooms, createChatRoom } from "../api/chat";
-import { useUser } from "../context/UserContext"; // 유저 정보를 가져오기 위해 사용
+import React from "react";
+import styled from "styled-components";
+import { useNavigate } from "react-router-dom"; // useNavigate를 가져옵니다.
 
-const ChatRoomList = () => {
-  const { user } = useUser(); // 현재 로그인된 유저 정보
-  const [chatRooms, setChatRooms] = useState([]); // 채팅방 목록 상태
-  const [friendId, setFriendId] = useState(""); // 새로운 채팅방을 만들기 위한 친구 ID
+const ChatRoomListContainer = styled.div`
+  padding: 1rem;
+`;
 
-  // 채팅방 목록을 가져오는 함수
-  const fetchChatRooms = async () => {
-    try {
-      const chatRoomData = await getChatRooms(user.userId);
-      setChatRooms(chatRoomData);
-    } catch (error) {
-      console.error("채팅방 목록을 불러오는데 실패했습니다.", error);
-    }
-  };
+const ChatRoomItem = styled.div`
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #e2e8f0;
+  cursor: pointer;
+`;
 
-  useEffect(() => {
-    if (user.userId) {
-      fetchChatRooms();
-    }
-  }, [user.userId]);
+const ProfileImage = styled.div`
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: #cbd5e0;
+  margin-right: 1rem;
+`;
 
-  // 새로운 채팅방 생성
-  const handleCreateChatRoom = async () => {
-    try {
-      await createChatRoom(user.userId, friendId);
-      fetchChatRooms(); // 채팅방 목록을 다시 불러옴
-    } catch (error) {
-      console.error("채팅방 생성에 실패했습니다.", error);
-    }
+const ChatRoomDetails = styled.div`
+  flex-grow: 1;
+`;
+
+const ChatRoomInfo = styled.p`
+  margin: 0;
+  font-size: 1.2rem;
+  color: #4a5568;
+`;
+
+const ChatRoomList = ({ chatRooms, userId }) => {
+  const navigate = useNavigate(); // 페이지 이동을 위한 useNavigate
+
+  const handleChatRoomClick = (friendId) => {
+    navigate(`/chat/${friendId}`); // 상대방의 ID를 URL로 사용하여 이동
   };
 
   return (
-    <div>
+    <ChatRoomListContainer>
       <h2>채팅방 목록</h2>
-      <ul>
-        {chatRooms.map((room) => (
-          <li key={room.id}>
-            채팅방: {room.user1} - {room.user2}
-          </li>
-        ))}
-      </ul>
-      <div>
-        <input
-          type="text"
-          value={friendId}
-          onChange={(e) => setFriendId(e.target.value)}
-          placeholder="친구 ID 입력"
-        />
-        <button onClick={handleCreateChatRoom}>채팅방 생성</button>
-      </div>
-    </div>
+      {chatRooms.map((room) => {
+        // 현재 사용자의 ID와 다른 유저의 ID를 찾기 위한 로직
+        const friendId = room.user1 === userId ? room.user2 : room.user1;
+        return (
+          <ChatRoomItem
+            key={room.id}
+            onClick={() => handleChatRoomClick(friendId)}
+          >
+            <ProfileImage />
+            <ChatRoomDetails>
+              <ChatRoomInfo>
+                채팅방: {room.user1} - {room.user2}
+              </ChatRoomInfo>
+            </ChatRoomDetails>
+          </ChatRoomItem>
+        );
+      })}
+    </ChatRoomListContainer>
   );
 };
 

@@ -1,7 +1,6 @@
 import React from "react";
 import styled from "styled-components";
 
-// 스타일 정의
 const ProfileContainer = styled.div`
   display: flex;
   align-items: center;
@@ -32,21 +31,23 @@ const Info = styled.p`
   margin: 0.5rem 0 0 0;
   font-size: 1rem;
   color: #718096;
+  cursor: pointer;
+  &:hover {
+    text-decoration: underline;
+  }
 `;
 
-const Profile = () => {
-  // 목데이터
+const Profile = ({ friendCount, chatRoomCount, onSelect }) => {
   const nickname = "내 닉네임"; // 유저 닉네임
-  const friendCount = 10; // 친구 수
-  const chatRoomCount = 3; // 채팅방 수
 
   return (
     <ProfileContainer>
       <ProfileImage />
       <ProfileDetails>
         <Nickname>{nickname}</Nickname>
-        <Info>
-          친구 {friendCount}명 | 채팅방 {chatRoomCount}개
+        <Info onClick={() => onSelect("friends")}>친구 {friendCount}명</Info>
+        <Info onClick={() => onSelect("chatrooms")}>
+          채팅방 {chatRoomCount}개
         </Info>
       </ProfileDetails>
     </ProfileContainer>
