@@ -69,9 +69,9 @@ const LoginForm = () => {
       console.log(response);
       // 로그인 성공 시 상태 업데이트
       if (response) {
-        const { userId, nickName } = response;
-        loginUser(userId, nickName); // 유저 정보 저장
-        navigate("/chat");
+        const { userId, nickName, friendsCount, chatRoomsCount } = response;
+        loginUser(userId, nickName, friendsCount, chatRoomsCount);
+        navigate("/profile");
       } else {
         setError("아이디와 비밀번호가 일치하지 않습니다!");
       }

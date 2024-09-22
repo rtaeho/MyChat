@@ -9,6 +9,7 @@ import LoginPage from "./pages/LoginPage";
 import SignUpPage from "./pages/SignUpPage";
 import ChatPage from "./pages/ChatPage";
 import Header from "./components/Header";
+import UserProfilePage from "./pages/UserProfilePage";
 
 const App = () => (
   <UserProvider>
@@ -20,7 +21,8 @@ const App = () => (
         <Route path="/start" element={<StartPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup" element={<SignUpPage />} />
-        <Route path="/chat" element={<ChatPage />} />
+        <Route path="/chat:id" element={<ChatPage />} />
+        <Route path="/profile" element={<UserProfilePage />} />
       </Routes>
     </Router>
   </UserProvider>

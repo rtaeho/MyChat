@@ -1,4 +1,4 @@
-// src/components/ChatRoom.jsx
+// src/components/ChatRoom.js
 import React from "react";
 import styled from "styled-components";
 
