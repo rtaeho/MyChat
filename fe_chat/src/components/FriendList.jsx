@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import { useNavigate } from "react-router-dom"; // useNavigate 사용
+import { useNavigate } from "react-router-dom"; // 페이지 이동을 위한 useNavigate
 import { createChatRoom } from "../api/chat"; // 채팅방 생성 API 호출
+import { useUser } from "../context/UserContext"; // 현재 로그인된 유저 정보 가져오기
 
 const FriendListContainer = styled.div`
   padding: 1rem;
@@ -52,6 +53,7 @@ const FriendList = ({ friends, onDelete }) => {
   const [showModal, setShowModal] = useState(false);
   const [selectedFriend, setSelectedFriend] = useState(null);
   const navigate = useNavigate(); // 페이지 이동을 위한 useNavigate
+  const { user } = useUser(); // 현재 로그인된 유저 정보
 
   const handleFriendClick = (friend) => {
     setSelectedFriend(friend.id);
@@ -70,8 +72,8 @@ const FriendList = ({ friends, onDelete }) => {
   const handleChat = async (friendId) => {
     try {
       // 채팅방 생성 후 상대방 ID로 라우팅
-      const chatRoom = await createChatRoom("현재 로그인된 유저 ID", friendId);
-      navigate(`/chat/${friendId}`); // 상대방의 ID로 페이지 이동
+      const chatRoom = await createChatRoom(user.userId, friendId);
+      navigate(`/chat/${chatRoom.id}`); // 생성된 채팅방 ID로 페이지 이동
     } catch (error) {
       console.error("채팅방 생성 실패:", error);
     }

@@ -32,11 +32,11 @@ const ChatRoomInfo = styled.p`
   color: #4a5568;
 `;
 
-const ChatRoomList = ({ chatRooms, userId }) => {
+const ChatRoomList = ({ chatRooms }) => {
   const navigate = useNavigate(); // 페이지 이동을 위한 useNavigate
 
-  const handleChatRoomClick = (friendId) => {
-    navigate(`/chat/${friendId}`); // 상대방의 ID를 URL로 사용하여 이동
+  const handleChatRoomClick = (roomId) => {
+    navigate(`/chat/${roomId}`); // 상대방의 ID를 URL로 사용하여 이동
   };
 
   return (
@@ -44,11 +44,10 @@ const ChatRoomList = ({ chatRooms, userId }) => {
       <h2>채팅방 목록</h2>
       {chatRooms.map((room) => {
         // 현재 사용자의 ID와 다른 유저의 ID를 찾기 위한 로직
-        const friendId = room.user1 === userId ? room.user2 : room.user1;
         return (
           <ChatRoomItem
             key={room.id}
-            onClick={() => handleChatRoomClick(friendId)}
+            onClick={() => handleChatRoomClick(room.id)}
           >
             <ProfileImage />
             <ChatRoomDetails>

@@ -21,7 +21,7 @@ const App = () => (
         <Route path="/start" element={<StartPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup" element={<SignUpPage />} />
-        <Route path="/chat/:friendId" element={<ChatPage />} />
+        <Route path="/chat/:roomId" element={<ChatPage />} />
         <Route path="/profile" element={<UserProfilePage />} />
       </Routes>
     </Router>
