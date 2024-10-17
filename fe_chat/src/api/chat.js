@@ -14,8 +14,3 @@ export const createChatRoom = async (user1, user2) => {
 export const getMessages = async (chatRoomId) => {
   return await get(`/api/chat/${chatRoomId}/messages`);
 };
-
-// 메시지 전송 (채팅방 ID에 메시지 저장)
-export const sendMessage = async (chatRoomId, senderId, text) => {
-  return await post(`/api/chat/${chatRoomId}/messages`, { senderId, text });
-};

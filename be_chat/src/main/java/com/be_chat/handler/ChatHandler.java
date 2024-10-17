@@ -1,5 +1,8 @@
 package com.be_chat.handler;
 
+import com.be_chat.model.Message;
+import com.be_chat.service.MessageService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
@@ -12,6 +15,9 @@ import java.util.Map;
 
 @Component
 public class ChatHandler extends TextWebSocketHandler {
+
+    @Autowired
+    private MessageService messageService; // 메시지 저장을 위한 서비스
 
     // 채팅방 별로 WebSocket 세션을 관리하는 Map
     private Map<String, List<WebSocketSession>> chatRooms = new HashMap<>();
@@ -26,11 +32,15 @@ public class ChatHandler extends TextWebSocketHandler {
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
         String roomId = getRoomId(session); // URI에서 채팅방 ID 추출
+        String payload = message.getPayload(); // 메시지 내용
+
+        // 메시지를 저장하는 로직 추가
+        Message savedMessage = messageService.saveMessage(roomId, "senderId", payload); // senderId는 실제 데이터로 대체 (WebSocket 세션에서 유저 정보를 추출할 수 있으면 대체)
 
         // 채팅방에 있는 모든 사용자에게 메시지 전송
         for (WebSocketSession webSocketSession : chatRooms.get(roomId)) {
             if (webSocketSession.isOpen()) {
-                webSocketSession.sendMessage(new TextMessage(message.getPayload()));
+                webSocketSession.sendMessage(new TextMessage(payload)); // 브로드캐스트
             }
         }
     }

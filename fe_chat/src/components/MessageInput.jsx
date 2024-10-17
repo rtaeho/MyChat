@@ -32,8 +32,8 @@ const MessageInput = ({ onSendMessage }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (message.trim()) {
-      onSendMessage(message);
-      setMessage("");
+      onSendMessage(message); // 부모 컴포넌트로 메시지 전송
+      setMessage(""); // 입력창 초기화
     }
   };
 

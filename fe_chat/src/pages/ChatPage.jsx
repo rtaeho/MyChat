@@ -4,6 +4,7 @@ import ChatRoom from "../components/ChatRoom";
 import MessageInput from "../components/MessageInput";
 import { useParams } from "react-router-dom";
 import { useUser } from "../context/UserContext";
+import { getMessages } from "../api/chat"; // API 호출 가져오기
 
 const ChatContainer = styled.div`
   display: flex;
@@ -15,49 +16,57 @@ const ChatPage = () => {
   const [messages, setMessages] = useState([]);
   const { roomId } = useParams(); // 채팅할 상대방 ID
   const { user } = useUser(); // 현재 로그인된 유저 정보
-  const [socket, setSocket] = useState(null);
+  const [socket, setSocket] = useState(null); // WebSocket 저장
 
   useEffect(() => {
-    // WebSocket 서버에 연결
-    const ws = new WebSocket(`ws://localhost:8080/chat/${roomId}`);
-    setSocket(ws);
-
-    // 서버로부터 메시지를 수신할 때
-    ws.onmessage = (event) => {
-      const messageData = JSON.parse(event.data);
-
-      // 내가 보낸 메시지는 이미 로컬 상태에 추가했으므로, 중복 추가하지 않음
-      if (messageData.senderId !== user.userId) {
-        setMessages((prevMessages) => [
-          ...prevMessages,
-          { text: messageData.text, senderId: messageData.senderId },
-        ]);
-      }
+    // 기존 메시지 불러오기
+    const fetchMessages = async () => {
+      const response = await getMessages(roomId);
+      setMessages(
+        response.map((msg) => ({
+          text: msg.text,
+          isSent: msg.senderId === user.userId,
+        }))
+      );
     };
 
-    // 컴포넌트 언마운트 시 WebSocket 연결 종료
+    fetchMessages();
+
+    // WebSocket 서버 연결
+    const ws = new window.WebSocket(`ws://localhost:8080/chat/${roomId}`);
+    setSocket(ws);
+
+    // 서버로부터 수신한 메시지 처리
+    ws.onmessage = (event) => {
+      const receivedMessage = JSON.parse(event.data);
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        {
+          text: receivedMessage.text,
+          isSent: receivedMessage.senderId === user.userId,
+        },
+      ]);
+    };
+
+    // 컴포넌트 언마운트 시 WebSocket 연결 해제
     return () => {
       ws.close();
     };
   }, [roomId, user.userId]);
 
-  const handleSendMessage = (text) => {
-    // 메시지를 WebSocket을 통해 서버로 전송
+  // 메시지 전송 처리
+  const handleSendMessage = async (text) => {
     if (socket) {
-      const message = { text, senderId: user.userId };
-      socket.send(JSON.stringify(message));
-
-      // 서버에서 다시 수신하지 않고, 로컬에서만 바로 메시지를 추가
-      setMessages((prevMessages) => [
-        ...prevMessages,
-        { text, senderId: user.userId }, // 내가 보낸 메시지는 senderId로 구분
-      ]);
+      const messageData = { chatRoomId: roomId, senderId: user.userId, text };
+      // 서버로 메시지 전송 (WebSocket 사용)
+      socket.send(JSON.stringify(messageData));
+      setMessages([...messages, { text, isSent: true }]); // 전송된 메시지를 로컬 상태에 추가
     }
   };
 
   return (
     <ChatContainer>
-      <h2>{roomId}의 채팅방</h2>
+      <h2>채팅방: {roomId}</h2>
       <ChatRoom messages={messages} />
       <MessageInput onSendMessage={handleSendMessage} />
     </ChatContainer>
